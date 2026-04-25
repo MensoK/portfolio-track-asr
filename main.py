@@ -20,6 +20,11 @@ def add_asset(
     typer.echo(f"Added {asset.ticker}: {asset.quantity} shares at ${asset.purchase_price:.1f}")
 
 
+@app.command()
+def prices():
+    portfolio = Portfolio.load(portfolio_controller.PORTFOLIO_PATH)
+    current_prices = portfolio_controller.get_current_prices([a.ticker for a in portfolio.assets])
+    table_view.display_prices(portfolio.assets, current_prices)
 
 
 @app.command()
