@@ -36,8 +36,8 @@ def get_current_prices(tickers: list[str]) -> dict[str, float]: #function to get
         prices[ticker] = yf.Ticker(ticker).fast_info.last_price
     return prices
 
-def get_history(tickers: list[str]) -> pd.DataFrame: #function to get history of closing prices from yahoo finance over 5year period
-    data = yf.download(tickers, period="5y")["Close"]
+def get_history(tickers: list[str], period: str = "5y") -> pd.DataFrame: #function to get history of closing prices from yahoo finance
+    data = yf.download(tickers, period=period)["Close"]
     if isinstance(data, pd.Series):
         data = data.to_frame(name=tickers[0])
     return data
