@@ -10,7 +10,7 @@ class Portfolio:
     assets: list[Asset] = field(default_factory=list)
 
     def add_asset(self, asset: Asset) -> None: #function to add asset to list
-        self.asset.append(asset)
+        self.assets.append(asset)
 
     def save_asset(self, path: Path) -> None: #function to convert object Asset to json, helps against memory loss after running program
         data = [{"ticker": a.ticker,
