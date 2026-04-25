@@ -1,8 +1,10 @@
+from typing import List
+
 import typer
 
-from portfolio_track_asr.models.asset import Asset
 from portfolio_track_asr.controllers import portfolio_controller
-from datetime import date
+from portfolio_track_asr.models.portfolio import Portfolio
+from portfolio_track_asr.views import table_view, chart_view
 
 app = typer.Typer()
 
@@ -16,6 +18,17 @@ def add_asset(
 ):
     asset = portfolio_controller.add_asset(ticker, sector, asset_class, quantity, purchase_price)
     typer.echo(f"Added {asset.ticker}: {asset.quantity} shares at ${asset.purchase_price:.1f}")
+
+
+
+
+@app.command()
+def chart(
+    tickers: List[str] = typer.Argument(...),
+    period: str = typer.Option("1y", "--period", "-p"),
+):
+    history = portfolio_controller.get_history(tickers, period)
+    chart_view.show_chart(history, tickers, period)
 
 
 if __name__ == "__main__":
