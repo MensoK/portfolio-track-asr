@@ -26,7 +26,7 @@ class Portfolio:
     def load(cls, path:Path) -> "Portfolio":
         if not path.exists():
             return cls()
-        data = json.load(path.read_text())
+        data = json.loads(path.read_text())
         assets = [Asset(
                     ticker=item["ticker"],
                     sector=item["sector"],
