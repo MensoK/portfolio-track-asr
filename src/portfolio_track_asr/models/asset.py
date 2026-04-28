@@ -14,5 +14,8 @@ class Asset:
     def transaction_value(self) -> float:
         return self.quantity * self.purchase_price
 
+    def current_value(self, current_price: float) -> float:
+        return self.quantity * current_price
+
 
 
