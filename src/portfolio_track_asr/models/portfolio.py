@@ -22,6 +22,30 @@ class Portfolio:
                  for a in self.assets]
         path.write_text(json.dumps(data))
 
+    def total_value(self, prices: dict[str, float]) -> float:
+        return sum(a.current_value(prices[a.ticker]) for a in self.assets if a.ticker in prices)
+
+    def asset_weights(self, prices: dict[str, float]) -> dict[str, float]:
+        total = self.total_value(prices)
+        if total == 0:
+            return {}
+        return {
+            a.ticker: round(a.current_value(prices[a.ticker]) / total * 100, 2)
+            for a in self.assets if a.ticker in prices
+        }
+
+    def weights_by_group(self, prices: dict[str, float], group_by: str) -> dict[str, float]:
+        total = self.total_value(prices)
+        if total == 0:
+            return {}
+        groups: dict[str, float] = {}
+        for asset in self.assets:
+            if asset.ticker not in prices:
+                continue
+            key = getattr(asset, group_by)
+            groups[key] = groups.get(key, 0) + asset.current_value(prices[asset.ticker])
+        return {k: round(v / total * 100, 2) for k, v in groups.items()}
+
     @classmethod
     def load(cls, path:Path) -> "Portfolio":
         if not path.exists():
