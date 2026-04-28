@@ -36,5 +36,12 @@ def chart(
     chart_view.show_chart(history, tickers, period)
 
 
+@app.command()
+def view_portfolio():
+    portfolio = Portfolio.load(portfolio_controller.PORTFOLIO_PATH)
+    prices = portfolio_controller.get_current_prices([a.ticker for a in portfolio.assets])
+    table_view.display_portfolio(portfolio.assets, prices)
+
+
 if __name__ == "__main__":
     app()
