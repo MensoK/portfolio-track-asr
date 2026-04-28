@@ -3,8 +3,8 @@ import matplotlib.pyplot as plt
 from portfolio_track_asr.models.asset import Asset
 
 
-def display_portfolio(assets: list[Asset], prices: dict[str, float]) -> None:
-    columns = ["Ticker", "Sector", "Asset Class", "Quantity", "Purchase Price", "Transaction Value", "Current Value"]
+def display_portfolio(assets: list[Asset], prices: dict[str, float], weights: dict[str, float], total: float) -> None:
+    columns = ["Ticker", "Sector", "Asset Class", "Quantity", "Purchase Price", "Transaction Value", "Current Value", "Weight %"]
     values = []
 
     for asset in assets:
@@ -13,8 +13,19 @@ def display_portfolio(assets: list[Asset], prices: dict[str, float]) -> None:
             continue
         values.append([
             asset.ticker, asset.sector, asset.asset_class, asset.quantity,
-            asset.purchase_price, asset.transaction_value, asset.current_value(current),
+            asset.purchase_price, asset.transaction_value,
+            asset.current_value(current), weights.get(asset.ticker, 0),
         ])
+
+    _, ax = plt.subplots()
+    ax.axis("off")
+    ax.table(cellText=values, colLabels=columns, loc="center")
+    plt.show()
+
+
+def display_group_weights(groups: dict[str, float], title: str, total: float) -> None:
+    columns = ["Group", "Weight %"]
+    values = [[k, v] for k, v in groups.items()]
 
     _, ax = plt.subplots()
     ax.axis("off")
