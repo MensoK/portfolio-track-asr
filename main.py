@@ -37,10 +37,22 @@ def chart(
 
 
 @app.command()
-def view_portfolio():
+def view_portfolio(
+    group_by: str = typer.Option(None, "--group-by", "-g", help="Group weights by: sector, asset-class"),
+):
     portfolio = Portfolio.load(portfolio_controller.PORTFOLIO_PATH)
     prices = portfolio_controller.get_current_prices([a.ticker for a in portfolio.assets])
-    table_view.display_portfolio(portfolio.assets, prices)
+    total = portfolio.total_value(prices)
+
+    if group_by == "sector":
+        groups = portfolio.weights_by_group(prices, "sector")
+        table_view.display_group_weights(groups, "Weights by Sector", total)
+    elif group_by == "asset-class":
+        groups = portfolio.weights_by_group(prices, "asset_class")
+        table_view.display_group_weights(groups, "Weights by Asset Class", total)
+    else:
+        weights = portfolio.asset_weights(prices)
+        table_view.display_portfolio(portfolio.assets, prices, weights, total)
 
 
 if __name__ == "__main__":
