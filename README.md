@@ -18,8 +18,7 @@ Add a position to your portfolio. The data is saved to `portfolio.json` so it pe
 poetry run python main.py add-asset AAPL --sector Technology --asset-class Stock --quantity 10 --purchase-price 150.00
 ```
 
-| Option | Short | Description |
-|---|---|---|
+
 | `--sector` | `-s` | Sector the asset belongs to |
 | `--asset-class` | `-a` | Asset class (e.g. Stock, ETF, Bond) |
 | `--quantity` | `-q` | Number of shares / units held |
@@ -72,7 +71,7 @@ Supported period values: `1d`, `5d`, `1mo`, `3mo`, `6mo`, `1y`, `2y`, `5y`, `10y
 
 ### Monte Carlo simulation
 
-Simulates the portfolio value over the next 15 years across 100,000 random paths using Geometric Brownian Motion. Parameters (expected return, volatility, correlations) are estimated from the past 3 years of historical data.
+Simulates the portfolio value over the next 15 years across 100,000 random paths. Parameters (expected return, volatility, correlations) are estimated from the past 3 years of historical data.
 
 The chart shows percentile bands: the dark band covers 25–75% of outcomes, the outer band covers 5–95%, and the line is the median path.
 
@@ -84,7 +83,6 @@ poetry run python main.py simulate
 poetry run python main.py simulate --years 10 --paths 50000
 ```
 
-| Option | Description |
-|---|---|
+
 | `--years` / `-y` | Number of years to simulate (default: 15) |
 | `--paths` | Number of simulated paths (default: 100,000) |
