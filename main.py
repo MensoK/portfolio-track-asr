@@ -4,6 +4,7 @@ import typer
 
 from portfolio_track_asr.controllers import portfolio_controller
 from portfolio_track_asr.models.portfolio import Portfolio
+from portfolio_track_asr.models.simulation import run_simulation
 from portfolio_track_asr.views import table_view, chart_view
 
 app = typer.Typer()
@@ -53,6 +54,22 @@ def view_portfolio(
     else:
         weights = portfolio.asset_weights(prices)
         table_view.display_portfolio(portfolio.assets, prices, weights, total)
+
+
+@app.command()
+def simulate(
+    n_years: int = typer.Option(15, "--years", "-y"),
+    n_paths: int = typer.Option(100_000, "--paths"),
+):
+    portfolio = Portfolio.load(portfolio_controller.PORTFOLIO_PATH)
+    prices = portfolio_controller.get_current_prices([a.ticker for a in portfolio.assets])
+    total = portfolio.total_value(prices)
+    weights_dict = portfolio.asset_weights(prices)
+    tickers = [a.ticker for a in portfolio.assets if a.ticker in prices]
+    weights = [weights_dict[t] / 100 for t in tickers]
+    w, mean_returns, cov_matrix = portfolio_controller.get_simulation_params(tickers, weights)
+    paths = run_simulation(total, w, mean_returns, cov_matrix, n_paths=n_paths, n_years=n_years)
+    chart_view.show_simulation_chart(paths, n_years, total)
 
 
 if __name__ == "__main__":
