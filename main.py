@@ -57,6 +57,20 @@ def view_portfolio(
 
 
 @app.command()
+def risk(
+    period: str = typer.Option("1y", "--period", "-p"),
+    risk_free_rate: float = typer.Option(0.02, "--risk-free-rate", "-r"),
+):
+    portfolio = Portfolio.load(portfolio_controller.PORTFOLIO_PATH)
+    prices = portfolio_controller.get_current_prices([a.ticker for a in portfolio.assets])
+    weights = portfolio.asset_weights(prices)
+    history = portfolio_controller.get_history([a.ticker for a in portfolio.assets], period=period)
+    volatilities = portfolio.asset_volatilities(history)
+    sharpe = portfolio.sharpe_ratio(history, weights, risk_free_rate)
+    table_view.display_risk_metrics(portfolio.assets, volatilities, sharpe)
+
+
+@app.command()
 def simulate(
     n_years: int = typer.Option(15, "--years", "-y"),
     n_paths: int = typer.Option(100_000, "--paths"),

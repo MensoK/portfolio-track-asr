@@ -33,6 +33,20 @@ def display_group_weights(groups: dict[str, float], title: str, total: float) ->
     plt.show()
 
 
+def display_risk_metrics(assets: list[Asset], volatilities: dict[str, float], sharpe: float) -> None:
+    columns = ["Ticker", "Annualized Volatility"]
+    values = [
+        [a.ticker, f"{volatilities[a.ticker]:.2%}"]
+        for a in assets if a.ticker in volatilities
+    ]
+
+    _, ax = plt.subplots()
+    ax.axis("off")
+    ax.table(cellText=values, colLabels=columns, loc="center")
+    ax.set_title(f"Risk Metrics  |  Portfolio Sharpe Ratio: {sharpe:.4f}")
+    plt.show()
+
+
 def display_prices(assets: list[Asset], prices: dict[str, float]) -> None: #function to display a table with added assets and their components
     columns = ["Ticker", "Quantity", "Purchase Price", "Current Price", "Gain/Loss $", "Gain/Loss %"]
     values = []
