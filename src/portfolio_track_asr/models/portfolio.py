@@ -52,7 +52,7 @@ class Portfolio:
     def asset_volatilities(self, history: pd.DataFrame) -> dict[str, float]:
         log_returns = np.log(history / history.shift(1))
         return {
-            a.ticker: round(float(log_returns[a.ticker].std() * np.sqrt(252)), 4)
+            a.ticker: round(float(log_returns[a.ticker].std() * np.sqrt(252)), 2) #252 trading days
             for a in self.assets if a.ticker in log_returns.columns
         }
 
@@ -61,10 +61,8 @@ class Portfolio:
         tickers = [a.ticker for a in self.assets if a.ticker in log_returns.columns]
         w = np.array([weights.get(t, 0) / 100 for t in tickers])
         portfolio_daily = log_returns[tickers].values @ w
-        annualized_return = portfolio_daily.mean() * 252
+        annualized_return = portfolio_daily.mean() * 252 #252 trading days
         annualized_vol = portfolio_daily.std() * np.sqrt(252)
-        if annualized_vol == 0:
-            return 0.0
         return round((annualized_return - risk_free_rate) / annualized_vol, 4)
 
     @classmethod
