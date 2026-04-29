@@ -1,6 +1,7 @@
 from datetime import date
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import yfinance as yf
 
@@ -41,4 +42,11 @@ def get_history(tickers: list[str], period: str = "5y") -> pd.DataFrame: #functi
     if isinstance(data, pd.Series):
         data = data.to_frame(name=tickers[0])
     return data
+
+def get_simulation_params(tickers: list[str], weights: list[float]) -> tuple:
+    history = get_history(tickers, period="3y")
+    log_returns = np.log(history / history.shift(1)).dropna()
+    mean_returns = log_returns.mean().values * 252
+    cov_matrix = log_returns.cov().values * 252
+    return np.array(weights), mean_returns, cov_matrix
 
