@@ -3,6 +3,9 @@ from dataclasses import dataclass, field
 from datetime import date
 from pathlib import Path
 
+import numpy as np
+import pandas as pd
+
 from portfolio_track_asr.models.asset import Asset
 
 @dataclass
@@ -45,6 +48,24 @@ class Portfolio:
             key = getattr(asset, group_by)
             groups[key] = groups.get(key, 0) + asset.current_value(prices[asset.ticker])
         return {k: round(v / total * 100, 2) for k, v in groups.items()}
+
+    def asset_volatilities(self, history: pd.DataFrame) -> dict[str, float]:
+        log_returns = np.log(history / history.shift(1))
+        return {
+            a.ticker: round(float(log_returns[a.ticker].std() * np.sqrt(252)), 4)
+            for a in self.assets if a.ticker in log_returns.columns
+        }
+
+    def sharpe_ratio(self, history: pd.DataFrame, weights: dict[str, float], risk_free_rate: float = 0.02) -> float:
+        log_returns = np.log(history / history.shift(1))
+        tickers = [a.ticker for a in self.assets if a.ticker in log_returns.columns]
+        w = np.array([weights.get(t, 0) / 100 for t in tickers])
+        portfolio_daily = log_returns[tickers].values @ w
+        annualized_return = portfolio_daily.mean() * 252
+        annualized_vol = portfolio_daily.std() * np.sqrt(252)
+        if annualized_vol == 0:
+            return 0.0
+        return round((annualized_return - risk_free_rate) / annualized_vol, 4)
 
     @classmethod
     def load(cls, path:Path) -> "Portfolio":
