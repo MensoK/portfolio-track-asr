@@ -69,6 +69,24 @@ Supported period values: `1d`, `5d`, `1mo`, `3mo`, `6mo`, `1y`, `2y`, `5y`, `10y
 
 ---
 
+### Risk metrics
+
+Shows annualized volatility per asset and the portfolio-level Sharpe ratio. Volatility is calculated from daily log returns, annualized by multiplying by √252. The Sharpe ratio measures return earned per unit of risk above the risk-free rate: `(annualized_return − risk_free_rate) / annualized_volatility`.
+
+```bash
+# Default: 1-year history, 2% risk-free rate
+poetry run python main.py risk
+
+# Custom period and risk-free rate
+poetry run python main.py risk --period 2y --risk-free-rate 0.03
+```
+
+
+| `--period` | `-p` | Historical period for return/vol estimation (default: `1y`) |
+| `--risk-free-rate` | `-r` | Annual risk-free rate as a decimal (default: `0.02`) |
+
+---
+
 ### Monte Carlo simulation
 
 Simulates the portfolio value over the next 15 years across 100,000 random paths. Parameters (expected return, volatility, correlations) are estimated from the past 3 years of historical data.
